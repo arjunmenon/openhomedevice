@@ -15,6 +15,16 @@ class Device(object):
     def Uuid(self):
         return self.rootDevice.Device().Uuid()
 
+    def Debug(self):
+        service = self.rootDevice.Device().Service("urn:av-openhome-org:serviceId:Debug")
+        logResponse = soapRequest(service.ControlUrl(), service.Type(), "GetLog", "")
+
+        logXml = etree.fromstring(logResponse)
+
+        logs = logXml[0].find("{%s}GetLogResponse/Log" % service.Type()).text.split("\n")
+
+        return logs
+
     def Name(self):
         service = self.rootDevice.Device().Service("urn:av-openhome-org:serviceId:Product")
         product = soapRequest(service.ControlUrl(), service.Type(), "Product", "")
